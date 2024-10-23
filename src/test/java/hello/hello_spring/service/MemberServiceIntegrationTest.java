@@ -1,34 +1,23 @@
 package hello.hello_spring.service;
 
 import hello.hello_spring.domain.Member;
-import hello.hello_spring.repository.MemoryMemberRepository;
+import hello.hello_spring.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@SpringBootTest
+@Transactional
 class MemberServiceIntegrationTest {
 
-    MemberService memberService;
-    MemoryMemberRepository memberRepository;
-
-    @BeforeEach
-    public void beforeEach() {
-        // 메모리 멤버 리포지터리를 만들고
-        // 같은 메모리멤버 레포지터리를 사용함.
-        // 이것을 DI라고 함.
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
-    }
-
-    @AfterEach
-    public void afterEach() {
-        // 테스트할때마다 초기화 시킴 ==> 저장소를 지움. 왜냐면 테스트케이스는 순서대로 실행을 보장하지 않기 떄문.
-        memberRepository.clearStore();
-    }
+    // 테스트케이스는 그냥 오토와이어드 인젝션 하고 끝 (필드기반으로 인젝션)
+    @Autowired MemberService memberService;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     void 회원가입() {
@@ -57,22 +46,5 @@ class MemberServiceIntegrationTest {
         memberService.join(member1);
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
         assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
-
-
-//        try {
-//            memberService.join(member2);
-//            fail("예외가 발생해야 합니다.");
-//        } catch (IllegalStateException e) {
-//            assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.123123123");
-//        }
-        //then
-    }
-
-    @Test
-    void 전체찾기() {
-    }
-
-    @Test
-    void 하나찾기() {
     }
 }
